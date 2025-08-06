@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <meta charset="utf-8"/>
@@ -367,7 +366,10 @@
           const name=document.getElementById('studentName').value;
           if(!grade||!studentClass||!number||!name){ alert('学年・クラス・出席番号・氏名をすべて入力してください。'); return; }
           currentStudentInfo={ grade, class:studentClass, number, name };
-        }else{ currentStudentInfo=null; }
+        }else{ 
+          // 練習モードでも復習機能を使えるように仮想的な生徒情報を設定
+          currentStudentInfo={ grade:'練習', class:'練習', number:'0', name:'練習ユーザー' };
+        }
         startQuizGame();
       }
     }
@@ -586,7 +588,8 @@
         reviewWrap.classList.add('hidden');
       }
 
-      if(!isPracticeMode && !isReviewMode && currentStudentInfo){
+      // 練習モードではない場合のみ成績を保存・送信（練習ユーザーの成績は保存しない）
+      if(!isPracticeMode && !isReviewMode && currentStudentInfo && currentStudentInfo.name !== '練習ユーザー'){
         const newScore={
           ...currentStudentInfo,
           score, total:questions.length, percentage,
