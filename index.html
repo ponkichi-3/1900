@@ -72,11 +72,11 @@
 <div class="hidden" id="settingsScreen">
 <h2 id="settingsTitle">設定</h2>
 <div class="form-group">
-<label>単語の範囲（1〜1400）</label>
+<label>単語の範囲（1〜1900）</label>
 <div class="range-input">
-<input id="startRange" max="1400" min="1" type="number" value="1"/>
+<input id="startRange" max="1900" min="1" type="number" value="1"/>
 <span>〜</span>
-<input id="endRange" max="1400" min="1" type="number" value="50"/>
+<input id="endRange" max="1900" min="1" type="number" value="50"/>
 </div>
 </div>
 <div class="form-group" id="flashcardModeGroup" style="display:none">
@@ -352,7 +352,7 @@
       const startNum=parseInt(document.getElementById('startRange').value);
       const endNum=parseInt(document.getElementById('endRange').value);
       if(isNaN(startNum)||isNaN(endNum)){ alert('単語の範囲を正しく入力してください'); return; }
-      if(startNum<1||endNum>1400){ alert('単語の範囲は1〜1400の間で入力してください'); return; }
+      if(startNum<1||endNum>1400){ alert('単語の範囲は1〜1900の間で入力してください'); return; }
       if(startNum>endNum){ alert('開始番号は終了番号より小さくしてください'); return; }
       selectedRange={ start:startNum, end:endNum };
 
