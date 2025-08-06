@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<title>EたんSDG1900</title>
+<style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow-x:hidden}
+    .container{background:#fff;border-radius:20px;padding:30px;box-shadow:0 20px 40px rgba(0,0,0,.1);max-width:520px;width:100%}
+    h1,h2{text-align:center;color:#333;margin-bottom:24px}
+    h1{font-size:28px}
+    h2{font-size:22px}
+    .button{display:block;width:100%;padding:14px;margin-bottom:12px;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;transition:.2s;color:#fff;text-align:center;-webkit-appearance:none}
+    .button:hover{transform:translateY(-1px);box-shadow:0 5px 12px rgba(0,0,0,.2)}
+    .button:active{transform:translateY(0)}
+    .button-purple{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
+    .button-blue{background:linear-gradient(135deg,#3182ce 0%,#2c5282 100%)}
+    .button-green{background:linear-gradient(135deg,#48bb78 0%,#2f855a 100%)}
+    .button-gray{background:linear-gradient(135deg,#718096 0%,#4a5568 100%)}
+    .button-red{background:linear-gradient(135deg,#f56565 0%,#c53030 100%)}
+    .form-group{margin-bottom:16px}
+    label{display:block;margin-bottom:6px;font-weight:700;color:#4a5568;font-size:14px}
+    input[type=number],input[type=text],input[type=password],select{width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:8px;font-size:16px;transition:border-color .2s;-webkit-appearance:none}
+    input:focus,select:focus{outline:none;border-color:#667eea}
+    .range-input{display:flex;gap:10px;align-items:center}
+    .range-input input{width:110px}
+    .quiz-container{text-align:center}
+    .question{font-size:34px;font-weight:700;margin:32px 0;color:#2d3748;line-height:1.2;word-break:break-word}
+    .options{display:grid;gap:12px}
+    .option-button{padding:16px;border:2px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;transition:.15s;font-size:18px;-webkit-appearance:none;width:100%;text-align:left}
+    .option-button:hover{background:#f7fafc;border-color:#cbd5e0;transform:translateX(4px)}
+    .option-button.correct{background:#48bb78;color:#fff;border-color:#48bb78}
+    .option-button.incorrect{background:#f56565;color:#fff;border-color:#f56565}
+    .progress-bar{height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:20px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#667eea 0%,#48bb78 100%);transition:width .3s;border-radius:4px}
+    .score-display{font-size:64px;font-weight:800;color:#3182ce;margin:18px 0}
+    .hidden{display:none}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .warning-box{background:#fff5f5;border:2px solid #feb2b2;border-radius:8px;padding:12px;margin-bottom:12px;color:#c53030;font-size:14px}
+    .success-box{background:#f0fff4;border:2px solid #9ae6b4;border-radius:8px;padding:12px;margin-bottom:12px;color:#276749;font-size:14px}
+    .flashcard{background:#fff;border-radius:20px;padding:40px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.08);margin-bottom:20px;min-height:260px;display:flex;flex-direction:column;justify-content:center}
+    .flashcard-word{font-size:38px;font-weight:800;color:#2d3748;margin-bottom:20px;word-break:break-word}
+    .flashcard-answer{font-size:24px;color:#4a5568}
+    .flashcard-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .control-button{padding:10px 16px;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;transition:.2s;color:#fff;background:#4a5568}
+    .practice-mode-notice{background:#fffaf0;border:2px solid #ed8936;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center}
+    .review-notice{background:#f3e8ff;border:2px solid #b794f6;border-radius:8px;padding:12px;margin-bottom:12px;text-align:center}
+    @media (max-width:480px){
+      .container{padding:20px}
+      .question{font-size:26px}
+      .flashcard-word{font-size:30px}
+      .flashcard-answer{font-size:22px}
+      .score-display{font-size:52px}
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+<!-- Home -->
+<div id="homeScreen">
+<h1>EたんSDG1900</h1>
+<p style="text-align:center;color:#718096;margin-bottom:20px;">ターゲット1900対応</p>
+<button class="button button-purple" onclick="startFlashcard()">単語学習モード</button>
+<button class="button button-blue" onclick="startQuiz()">テストモード</button>
+<button class="button button-green" onclick="showTeacherLogin()">教員ページ</button>
+</div>
+<!-- Settings -->
+<div class="hidden" id="settingsScreen">
+<h2 id="settingsTitle">設定</h2>
+<div class="form-group">
+<label>単語の範囲（1〜1400）</label>
+<div class="range-input">
+<input id="startRange" max="1400" min="1" type="number" value="1"/>
+<span>〜</span>
+<input id="endRange" max="1400" min="1" type="number" value="50"/>
+</div>
+</div>
+<div class="form-group" id="flashcardModeGroup" style="display:none">
+<label>学習モード</label>
+<select id="flashcardMode">
+<option value="en-ja">英語 → 日本語</option>
+<option value="ja-en">日本語 → 英語</option>
+</select>
+</div>
+<div class="form-group" id="questionCountGroup">
+<label>問題数</label>
+<div class="range-input">
+<select id="questionCountSelect" onchange="toggleCustomCount()">
+<option value="5">5問</option>
+<option selected="" value="10">10問</option>
+<option value="20">20問</option>
+<option value="30">30問</option>
+<option value="40">40問</option>
+<option value="50">50問</option>
+<option value="custom">カスタム</option>
+</select>
+<input class="hidden" id="questionCountCustom" max="200" min="1" placeholder="任意の数（1〜200）" type="number" value="10"/>
+</div>
+<small id="questionCountHelp" style="color:#718096;">カスタム選択時は1〜200で指定（出題は選択範囲の語数が上限）。</small>
+</div>
+<div id="studentInfoGroup">
+<div class="info-grid">
+<div class="form-group">
+<label>学年 <span style="color:#f56565;">*</span></label>
+<select id="studentGrade">
+<option value="">選択してください</option>
+<option value="1年">1年</option>
+<option value="2年">2年</option>
+<option value="3年">3年</option>
+</select>
+</div>
+<div class="form-group">
+<label>クラス <span style="color:#f56565;">*</span></label>
+<select id="studentClass">
+<option value="">選択してください</option>
+</select>
+</div>
+</div>
+<div class="info-grid">
+<div class="form-group">
+<label>出席番号 <span style="color:#f56565;">*</span></label>
+<select id="studentNumber">
+<option value="">選択してください</option>
+</select>
+</div>
+<div class="form-group">
+<label>氏名 <span style="color:#f56565;">*</span></label>
+<input id="studentName" placeholder="例: 山田太郎" type="text"/>
+</div>
+</div>
+<div class="form-group">
+<label><input id="practiceMode" style="margin-right:6px;" type="checkbox"/>練習モード（成績は記録されません）</label>
+</div>
+</div>
+<button class="button button-blue" onclick="startGame()">開始</button>
+<button class="button button-gray" onclick="backToHome()">戻る</button>
+</div>
+<!-- Flashcards -->
+<div class="hidden" id="flashcardScreen">
+<div style="margin-bottom:12px;">
+<div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+<span id="flashcardProgress"></span>
+<span id="knownCount"></span>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="flashcardProgressFill"></div></div>
+</div>
+<div class="flashcard">
+<div class="flashcard-word" id="flashcardWord"></div>
+<div class="flashcard-answer hidden" id="flashcardAnswer"></div>
+<button class="button button-gray" id="showAnswerBtn" onclick="showFlashcardAnswer()" style="margin-top:14px;width:auto;padding:8px 20px;display:inline-block;">答えを見る</button>
+<button class="button button-green hidden" id="knownBtn" onclick="markAsKnown()" style="margin-top:14px;width:auto;padding:8px 20px;display:inline-block;">覚えた！</button>
+</div>
+<div class="flashcard-controls">
+<button class="control-button" id="prevBtn" onclick="previousFlashcard()">前へ</button>
+<div style="display:flex;gap:10px;">
+<button class="control-button" onclick="shuffleFlashcards()">シャッフル</button>
+<button class="control-button" onclick="endFlashcard()">終了</button>
+</div>
+<button class="control-button" id="nextBtn" onclick="nextFlashcard()">次へ</button>
+</div>
+</div>
+<!-- Quiz -->
+<div class="hidden" id="quizScreen">
+<div class="practice-mode-notice hidden" id="practiceNotice"><strong>⚠️ 練習モード</strong><br/>成績は記録されませんが、間違えた問題は復習できます</div>
+<div class="review-notice hidden" id="reviewNotice"><strong>📚 復習モード</strong><br/>間違えやすい単語から順に復習しています</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="quiz-container">
+<div class="question" id="questionText"></div>
+<div class="options" id="optionsContainer"></div>
+</div>
+<button class="button button-blue hidden" id="nextButton" onclick="nextQuestion()">次の問題へ</button>
+</div>
+<!-- Result -->
+<div class="hidden" id="resultScreen">
+<h2>テスト終了！</h2>
+<div class="score-display" id="scoreDisplay"></div>
+<p id="scoreDetail" style="text-align:center;font-size:18px;color:#4a5568;margin-bottom:16px;"></p>
+<div class="warning-box" id="saveNotice" style="display:none;"><strong>⚠️ 成績を保存してください</strong><br/>下の「クラウドに保存」ボタンをクリックして、成績を記録してください。</div>
+<div class="success-box" id="saveSuccess" style="display:none;"><strong>✅ 保存完了</strong><br/>成績がクラウドに保存されました。</div>
+<div class="hidden" id="reviewOption">
+<button class="button button-purple" id="reviewBtn" onclick="startReviewMode()">復習モードで間違えた問題を解く</button>
+</div>
+<button class="button button-red" id="cloudSaveBtn" onclick="saveToCloudWithFeedback()" style="display:none;">📤 クラウドに保存（必須）</button>
+<button class="button button-blue" onclick="restartQuiz()">もう一度挑戦</button>
+<button class="button button-gray" onclick="backToHome()">メニューに戻る</button>
+</div>
+<!-- Teacher Login -->
+<div class="hidden" id="teacherLoginScreen">
+<h2>教員ページログイン</h2>
+<div class="form-group">
+<label>パスワード</label>
+<input id="teacherPassword" placeholder="パスワードを入力" type="password"/>
+</div>
+<button class="button button-green" onclick="teacherLogin()">ログイン</button>
+<button class="button button-gray" onclick="backToHome()">戻る</button>
+</div>
+<!-- Teacher Page -->
+<div class="hidden" id="teacherScreen">
+<h2>成績管理</h2>
+<div id="scoresList" style="max-height:400px;overflow-y:auto;">
+<p style="text-align:center;color:#718096;">まだ成績データがありません</p>
+</div>
+<button class="button button-blue" onclick="loadCloudScores()" style="margin-top:10px;">クラウドから読み込み</button>
+<button class="button button-green" onclick="exportScores()" style="margin-top:10px;">CSVでエクスポート</button>
+<button class="button button-red" onclick="clearAllScores()" style="margin-top:20px;">すべてのデータを削除</button>
+<button class="button button-gray" onclick="backToHome()">戻る</button>
+</div>
+</div>
+<script>
+    // ====== グローバル状態 ======
+    let vocabularyData = []; // {id, english, japanese}[]
+    let currentMode = ''; // 'flashcard' | 'quiz'
+    let questions = [];
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedRange = { start: 1, end: 50 };
+    let studentScores = [];
+    let incorrectWords = [];
+    let reviewWords = {}; // 旧：{studentKey: Word[]}
+    let reviewStats = {}; // 新：{studentKey: { [id]: { id, english, japanese, wrong, last } } }
+    let currentStudentInfo = null;
+    let flashcardWords = [];
+    let flashcardIndex = 0;
+    let knownWords = new Set();
+    let isPracticeMode = false;
+    let isReviewMode = false;
+
+    // ====== GAS設定（必要に応じて置換） ======
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwrQ7AnvU8WH_lcI4i4yK-SeWstRW3HfC0v2acoM6gcyLfcSyTqxfFsVjYLYbts_LwL/exec';
+
+    // ====== ユーティリティ ======
+    function normalizePercentage(p){
+      if(typeof p === 'number'){return Math.round((p>=0&&p<=1)?(p*100):p);}
+      if(typeof p === 'string'){
+        const s=p.trim();
+        if(s.endsWith('%')){const v=parseFloat(s.slice(0,-1));return isNaN(v)?0:Math.round(v);}
+        const v=parseFloat(s); if(!isNaN(v)){return Math.round((v<=1)?(v*100):v);}
+      }
+      return 0;
+    }
+    function getStudentKey(info){return `${info.grade}_${info.class}_${info.number}_${info.name}`;}
+
+    // ====== ローカル保存 ======
+    function loadData(){
+      try{
+        const saved = localStorage.getItem('etanSDG1400Data');
+        if(!saved){return;}
+        const data = JSON.parse(saved);
+        studentScores = data.studentScores || [];
+        reviewWords   = data.reviewWords   || {};
+        reviewStats   = data.reviewStats   || {};
+
+        // 旧 reviewWords から reviewStats へ移行
+        if(Object.keys(reviewStats).length===0 && Object.keys(reviewWords).length>0){
+          reviewStats = {};
+          Object.keys(reviewWords).forEach(sk=>{
+            const arr = reviewWords[sk] || [];
+            if(!reviewStats[sk]) reviewStats[sk]={};
+            arr.forEach(w=>{
+              if(!w || typeof w.id==='undefined') return;
+              if(!reviewStats[sk][w.id]){
+                reviewStats[sk][w.id]={ id:w.id, english:w.english, japanese:w.japanese, wrong:1, last:new Date().toISOString() };
+              }else{
+                reviewStats[sk][w.id].wrong += 1;
+                reviewStats[sk][w.id].last = new Date().toISOString();
+              }
+            });
+          });
+        }
+      }catch(e){ console.warn('loadData failed', e); }
+    }
+    function saveData(){
+      const data={ studentScores, reviewWords, reviewStats };
+      localStorage.setItem('etanSDG1400Data', JSON.stringify(data));
+    }
+
+    // ====== 画面切替 ======
+    function showScreen(id){
+      ['homeScreen','settingsScreen','quizScreen','resultScreen','teacherLoginScreen','teacherScreen','flashcardScreen']
+        .forEach(sid=>document.getElementById(sid).classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function backToHome(){
+      showScreen('homeScreen');
+      currentMode='';
+      resetQuizState();
+    }
+    function resetQuizState(){
+      currentQuestion=0;score=0;questions=[];incorrectWords=[];isReviewMode=false;
+      const nextBtn=document.getElementById('nextButton'); if(nextBtn) nextBtn.classList.add('hidden');
+    }
+
+    // ====== セレクト初期化 ======
+    function initializeSelects(){
+      const classSelect=document.getElementById('studentClass');
+      const numberSelect=document.getElementById('studentNumber');
+      if(classSelect && classSelect.options.length<=1){
+        for(let i=1;i<=20;i++){const o=document.createElement('option');o.value=i+'組';o.textContent=i+'組';classSelect.appendChild(o);}
+      }
+      if(numberSelect && numberSelect.options.length<=1){
+        for(let i=1;i<=40;i++){const o=document.createElement('option');o.value=i+'番';o.textContent=i+'番';numberSelect.appendChild(o);}
+      }
+    }
+
+    // ====== 問題数入力UI ======
+    function toggleCustomCount(){
+      const sel=document.getElementById('questionCountSelect');
+      const custom=document.getElementById('questionCountCustom');
+      if(!sel||!custom) return;
+      if(sel.value==='custom'){ custom.classList.remove('hidden'); setTimeout(()=>custom.focus(),0); }
+      else{ custom.classList.add('hidden'); }
+    }
+    function getSelectedQuestionCount(maxAvailable){
+      const sel=document.getElementById('questionCountSelect');
+      const custom=document.getElementById('questionCountCustom');
+      let val;
+      if(sel && sel.value==='custom' && custom){
+        val=parseInt(custom.value); if(isNaN(val)) val=10; val=Math.max(1,Math.min(200,val));
+      }else if(sel){ val=parseInt(sel.value); }
+      else{ val=10; }
+      if(typeof maxAvailable==='number' && maxAvailable>0){ val=Math.min(val,maxAvailable); }
+      return val;
+    }
+
+    // ====== モード遷移 ======
+    function startFlashcard(){
+      currentMode='flashcard';
+      document.getElementById('settingsTitle').textContent='単語学習モード設定';
+      document.getElementById('questionCountGroup').style.display='none';
+      document.getElementById('studentInfoGroup').style.display='none';
+      document.getElementById('flashcardModeGroup').style.display='block';
+      showScreen('settingsScreen');
+    }
+    function startQuiz(){
+  hasSentToCloud = false; // 新しいテストのたびに送信フラグをリセット
+      currentMode='quiz';
+      document.getElementById('settingsTitle').textContent='テストモード設定';
+      document.getElementById('questionCountGroup').style.display='block';
+      document.getElementById('studentInfoGroup').style.display='block';
+      document.getElementById('flashcardModeGroup').style.display='none';
+      document.getElementById('practiceMode').checked=false;
+      isPracticeMode=false;
+      showScreen('settingsScreen');
+    }
+
+    // ====== 開始 ======
+    function startGame(){
+      const startNum=parseInt(document.getElementById('startRange').value);
+      const endNum=parseInt(document.getElementById('endRange').value);
+      if(isNaN(startNum)||isNaN(endNum)){ alert('単語の範囲を正しく入力してください'); return; }
+      if(startNum<1||endNum>1400){ alert('単語の範囲は1〜1400の間で入力してください'); return; }
+      if(startNum>endNum){ alert('開始番号は終了番号より小さくしてください'); return; }
+      selectedRange={ start:startNum, end:endNum };
+
+      if(currentMode==='flashcard'){
+        startFlashcardGame();
+      }else{
+        isPracticeMode=document.getElementById('practiceMode').checked;
+        if(!isPracticeMode){
+          const grade=document.getElementById('studentGrade').value;
+          const studentClass=document.getElementById('studentClass').value;
+          const number=document.getElementById('studentNumber').value;
+          const name=document.getElementById('studentName').value;
+          if(!grade||!studentClass||!number||!name){ alert('学年・クラス・出席番号・氏名をすべて入力してください。'); return; }
+          currentStudentInfo={ grade, class:studentClass, number, name };
+        }else{ currentStudentInfo=null; }
+        startQuizGame();
+      }
+    }
+
+    // ====== フラッシュカード ======
+    let isShowingAnswer=false;
+    function startFlashcardGame(){
+      const s=Math.min(selectedRange.start, selectedRange.end);
+      const e=Math.max(selectedRange.start, selectedRange.end);
+      flashcardWords=vocabularyData.filter(v=>v.id>=s && v.id<=e);
+      if(flashcardWords.length===0){ alert('指定した範囲に単語がありません'); return; }
+      flashcardIndex=0; knownWords.clear(); showScreen('flashcardScreen'); displayFlashcard();
+    }
+    function displayFlashcard(){
+      if(flashcardWords.length===0) return;
+      const word=flashcardWords[flashcardIndex];
+      const mode=document.getElementById('flashcardMode').value;
+      const q=document.getElementById('flashcardWord');
+      const a=document.getElementById('flashcardAnswer');
+      if(mode==='en-ja'){ q.textContent=word.english; a.textContent=word.japanese; }
+      else{ q.textContent=word.japanese; a.textContent=word.english; }
+      a.classList.add('hidden');
+      document.getElementById('showAnswerBtn').classList.remove('hidden');
+      document.getElementById('knownBtn').classList.add('hidden');
+      document.getElementById('flashcardProgress').textContent = `${flashcardIndex+1} / ${flashcardWords.length}`;
+      document.getElementById('knownCount').textContent = `覚えた: ${knownWords.size}個`;
+      document.getElementById('flashcardProgressFill').style.width = (((flashcardIndex+1)/flashcardWords.length)*100)+'%';
+      document.getElementById('prevBtn').disabled = (flashcardIndex===0);
+      document.getElementById('nextBtn').disabled = (flashcardIndex===flashcardWords.length-1);
+      isShowingAnswer=false;
+    }
+    function showFlashcardAnswer(){
+      const a=document.getElementById('flashcardAnswer');
+      a.classList.remove('hidden');
+      document.getElementById('showAnswerBtn').classList.add('hidden');
+      const btn=document.getElementById('knownBtn');
+      btn.classList.remove('hidden');
+      const w=flashcardWords[flashcardIndex];
+      btn.textContent = knownWords.has(w.id) ? '✓ 覚えた！' : '覚える';
+      isShowingAnswer=true;
+    }
+    function markAsKnown(){
+      const w=flashcardWords[flashcardIndex];
+      if(knownWords.has(w.id)){ knownWords.delete(w.id); } else { knownWords.add(w.id); }
+      showFlashcardAnswer();
+    }
+    function previousFlashcard(){ if(flashcardIndex>0){ flashcardIndex--; displayFlashcard(); } }
+    function nextFlashcard(){
+      if(flashcardIndex<flashcardWords.length-1){ flashcardIndex++; displayFlashcard(); }
+      else{
+        const unknown=flashcardWords.filter(w=>!knownWords.has(w.id));
+        if(unknown.length>0){
+          if(confirm(`${unknown.length}個の単語がまだ覚えていません。\nこれらの単語だけで続けますか？`)){
+            flashcardWords=unknown; flashcardIndex=0; displayFlashcard();
+          }
+        }else{
+          if(confirm('すべての単語を覚えました！\n単語学習を終了しますか？')){ endFlashcard(); }
+        }
+      }
+    }
+    function shuffleFlashcards(){ flashcardWords = [...flashcardWords].sort(()=>Math.random()-0.5); flashcardIndex=0; displayFlashcard(); }
+    function endFlashcard(){ flashcardWords=[]; flashcardIndex=0; knownWords.clear(); backToHome(); }
+
+    // ====== クイズ ======
+    function startQuizGame(){
+      if(!vocabularyData || vocabularyData.length===0){
+        alert('単語データが読み込まれていません。ページを再読み込みしてください。');
+        backToHome(); return;
+      }
+      // 復習モード
+      let questionCount=10;
+      if(isReviewMode && currentStudentInfo){
+        const studentKey=getStudentKey(currentStudentInfo);
+        const statsMap=(reviewStats && reviewStats[studentKey]) ? reviewStats[studentKey] : {};
+        let list=Object.values(statsMap);
+        if(!list || list.length===0){
+          const arr=(reviewWords && reviewWords[studentKey]) ? reviewWords[studentKey] : [];
+          list=arr.map(w=>({ id:w.id, english:w.english, japanese:w.japanese, wrong:1 }));
+        }
+        if(list.length===0){ alert('復習する単語がありません'); return; }
+        list.sort((a,b)=>(b.wrong||0)-(a.wrong||0));
+        questionCount=Math.min(getSelectedQuestionCount(list.length), list.length);
+        const vocabList=list.slice(0,questionCount).map(x=>({
+          id:x.id,
+          english:x.english ?? (vocabularyData.find(v=>v.id===x.id)?.english || ''),
+          japanese:x.japanese ?? (vocabularyData.find(v=>v.id===x.id)?.japanese || '')
+        }));
+        generateQuestions(vocabList, questionCount);
+        document.getElementById('practiceNotice').classList.add('hidden');
+        document.getElementById('reviewNotice').classList.remove('hidden');
+      }else{
+        const s=Math.min(selectedRange.start, selectedRange.end);
+        const e=Math.max(selectedRange.start, selectedRange.end);
+        const rangeVocab=vocabularyData.filter(v=>v.id>=s && v.id<=e);
+        if(rangeVocab.length===0){ alert('指定された範囲に単語がありません。範囲を確認してください。'); return; }
+        questionCount=getSelectedQuestionCount(rangeVocab.length);
+        generateQuestions(rangeVocab, questionCount);
+        document.getElementById('reviewNotice').classList.add('hidden');
+        document.getElementById('practiceNotice').classList.toggle('hidden', !isPracticeMode ? true : false);
+      }
+      if(!questions || questions.length===0){ alert('問題の生成に失敗しました。'); backToHome(); return; }
+      showScreen('quizScreen'); displayQuestion();
+    }
+
+    function generateQuestions(sourceVocab, count){
+      questions=[];
+      if(!sourceVocab || sourceVocab.length===0){ console.error('Source vocab empty'); return; }
+      const shuffled=[...sourceVocab].sort(()=>Math.random()-0.5);
+      const selected=shuffled.slice(0, Math.min(count, sourceVocab.length));
+      selected.forEach(correct=>{
+        if(!correct || !correct.english || !correct.japanese){ return; }
+        const allWords=vocabularyData.filter(v=>v.id!==correct.id);
+        const wrongAnswers=[];
+        const shuffledAll=[...allWords].sort(()=>Math.random()-0.5);
+        for(let i=0;i<3 && i<shuffledAll.length;i++){
+          if(shuffledAll[i] && shuffledAll[i].japanese){ wrongAnswers.push(shuffledAll[i].japanese); }
+        }
+        if(wrongAnswers.length<3){ return; }
+        const options=[correct.japanese, ...wrongAnswers].sort(()=>Math.random()-0.5);
+        questions.push({ id:correct.id, word:correct.english, correctAnswer:correct.japanese, options });
+      });
+    }
+
+    function displayQuestion(){
+      if(!questions || questions.length===0){ alert('問題の生成に失敗しました。設定を確認してください。'); backToHome(); return; }
+      if(currentQuestion>=questions.length){ showResult(); return; }
+      const q=questions[currentQuestion];
+      document.getElementById('questionText').textContent = q.word;
+      const container=document.getElementById('optionsContainer'); container.innerHTML='';
+      q.options.forEach(opt=>{
+        const btn=document.createElement('button');
+        btn.className='option-button'; btn.textContent=opt;
+        btn.onclick=()=>selectAnswer(opt);
+        container.appendChild(btn);
+      });
+      document.getElementById('progressFill').style.width = (((currentQuestion+1)/questions.length)*100)+'%';
+      document.getElementById('nextButton').classList.add('hidden');
+    }
+
+    function selectAnswer(answer){
+      const q=questions[currentQuestion];
+      const buttons=document.querySelectorAll('.option-button');
+      buttons.forEach(b=>{
+        b.disabled=true;
+        if(b.textContent===q.correctAnswer){ b.classList.add('correct'); }
+        else if(b.textContent===answer && answer!==q.correctAnswer){ b.classList.add('incorrect'); }
+      });
+      if(answer===q.correctAnswer){
+        score++;
+        if(isReviewMode && currentStudentInfo){
+          const studentKey=getStudentKey(currentStudentInfo);
+          if(reviewWords[studentKey]){
+            reviewWords[studentKey]=reviewWords[studentKey].filter(w=>w.id!==q.id);
+            saveData();
+          }
+        }
+      }else{
+        const incorrect=vocabularyData.find(v=>v.id===q.id) || {id:q.id, english:q.word, japanese:q.correctAnswer};
+        incorrectWords.push(incorrect);
+        if(currentStudentInfo){
+          const sk=getStudentKey(currentStudentInfo);
+          if(!reviewStats[sk]) reviewStats[sk]={};
+          if(!reviewStats[sk][q.id]){
+            reviewStats[sk][q.id]={ id:incorrect.id, english:incorrect.english, japanese:incorrect.japanese, wrong:1, last:new Date().toISOString() };
+          }else{
+            reviewStats[sk][q.id].wrong += 1;
+            reviewStats[sk][q.id].last = new Date().toISOString();
+          }
+          saveData();
+        }
+      }
+      document.getElementById('nextButton').classList.remove('hidden');
+    }
+
+    function nextQuestion(){
+      currentQuestion++;
+      if(currentQuestion<questions.length){ displayQuestion(); }
+      else{ showResult(); }
+    }
+
+    function showResult(){
+      const percentage=Math.round((score/questions.length)*100);
+      document.getElementById('scoreDisplay').textContent = percentage + '%';
+      document.getElementById('scoreDetail').textContent = `${score}/${questions.length} 問正解`;
+      const reviewWrap=document.getElementById('reviewOption');
+      const reviewBtn=document.getElementById('reviewBtn');
+
+      if(currentStudentInfo){
+        const studentKey=getStudentKey(currentStudentInfo);
+        const remaining=(reviewWords[studentKey]||[]).length;
+        if(isReviewMode){
+          if(remaining>0){
+            reviewWrap.classList.remove('hidden');
+            reviewBtn.textContent=`もう一度復習（残り${remaining}語）`;
+            reviewBtn.onclick=startReviewMode;
+          }else{
+            reviewWrap.classList.add('hidden');
+            alert('今回で間違えた単語の復習は完了しました！');
+          }
+        }else{
+          if(incorrectWords.length>0){
+            if(!reviewWords[studentKey]) reviewWords[studentKey]=[];
+            incorrectWords.forEach(w=>{
+              if(!reviewWords[studentKey].find(x=>x.id===w.id)){ reviewWords[studentKey].push(w); }
+            });
+            saveData();
+            const afterAdd=reviewWords[studentKey].length;
+            reviewWrap.classList.remove('hidden');
+            reviewBtn.textContent=`頻出誤答から復習（対象 ${afterAdd}語）`;
+            reviewBtn.onclick=startReviewMode;
+          }else{
+            reviewWrap.classList.add('hidden');
+          }
+        }
+      }else{
+        reviewWrap.classList.add('hidden');
+      }
+
+      if(!isPracticeMode && !isReviewMode && currentStudentInfo){
+        const newScore={
+          ...currentStudentInfo,
+          score, total:questions.length, percentage,
+          date:new Date().toLocaleString('ja-JP'),
+          range:`${selectedRange.start}-${selectedRange.end}`
+        };
+        studentScores.push(newScore); saveData();
+        // 自動送信UI初期化（非表示）
+        const _btn=document.getElementById('cloudSaveBtn');
+        const _notice=document.getElementById('saveNotice');
+        const _success=document.getElementById('saveSuccess');
+        if(_btn) _btn.style.display='none';
+        if(_notice) _notice.style.display='none';
+        if(_success) _success.style.display='none';
+        // 自動送信実行
+        autoSendResult(newScore);
+      }
+      showScreen('resultScreen');
+    }
+
+    function restartQuiz(){
+      resetQuizState();
+      if(currentMode==='quiz'){ startQuiz(); } else { startFlashcard(); }
+    }
+
+    // ====== 教員ページ ======
+    function showTeacherLogin(){
+      const pw=document.getElementById('teacherPassword'); if(pw) pw.value='';
+      showScreen('teacherLoginScreen');
+    }
+    function teacherLogin(){
+      const password=document.getElementById('teacherPassword').value;
+      if(password==='1611'){ showTeacherPage(); }
+      else{ alert('パスワードが間違っています'); }
+    }
+    function showTeacherPage(){
+      const list=document.getElementById('scoresList');
+      if(studentScores.length===0){
+        list.innerHTML='<p style="text-align:center;color:#718096;">まだ成績データがありません</p>';
+      }else{
+        let html='<table style="width:100%;border-collapse:collapse"><tr style="background:#f7fafc">'
+          +'<th style="padding:10px;border:1px solid #e2e8f0;">日時</th>'
+          +'<th style="padding:10px;border:1px solid #e2e8f0;">氏名</th>'
+          +'<th style="padding:10px;border:1px solid #e2e8f0;">学年</th>'
+          +'<th style="padding:10px;border:1px solid #e2e8f0;">得点</th>'
+          +'<th style="padding:10px;border:1px solid #e2e8f0;">範囲</th></tr>';
+        studentScores.forEach(s=>{
+          html+=`<tr>
+            <td style="padding:10px;border:1px solid #e2e8f0;">${s.date}</td>
+            <td style="padding:10px;border:1px solid #e2e8f0;">${s.name}</td>
+            <td style="padding:10px;border:1px solid #e2e8f0;">${s.grade} ${s.class} ${s.number}</td>
+            <td style="padding:10px;border:1px solid #e2e8f0;">${s.percentage}% (${s.score}/${s.total})</td>
+            <td style="padding:10px;border:1px solid #e2e8f0;">No.${s.range}</td>
+          </tr>`;
+        });
+        html+='</table>'; list.innerHTML=html;
+      }
+      showScreen('teacherScreen');
+    }
+    function exportScores(){
+      if(studentScores.length===0){ alert('エクスポートする成績データがありません'); return; }
+      let csv='日時,氏名,学年,クラス,出席番号,得点率,正解数,問題数,範囲\n';
+      studentScores.forEach(s=>{
+        csv+=`"${s.date}","${s.name}","${s.grade}","${s.class}","${s.number}",${s.percentage}%,${s.score},${s.total},"No.${s.range}"\n`;
+      });
+      const bom=new Uint8Array([0xEF,0xBB,0xBF]);
+      const blob=new Blob([bom,csv],{type:'text/csv;charset=utf-8'});
+      const link=document.createElement('a');
+      const date=new Date().toISOString().slice(0,10);
+      link.download=`etan_scores_${date}.csv`;
+      link.href=URL.createObjectURL(blob);
+      link.click(); URL.revokeObjectURL(link.href);
+    }
+    function clearAllScores(){
+      if(confirm('本当にすべてのデータを削除しますか？\nこの操作は取り消せません。')){
+        const dp=prompt('削除パスワード「9999」を入力してください：');
+        if(dp==='9999'){
+          studentScores=[]; reviewWords={}; reviewStats={}; saveData();
+          alert('すべてのデータを削除しました'); showTeacherPage();
+        }else{ alert('パスワードが違います'); }
+      }
+    }
+
+    // ====== クラウド連携 ======
+    
+
+function saveScoreToCloud(scoreData){
+  return new Promise((resolve) => {
+    try{
+      // 一意のID（GAS側の重複除外で使える）
+      if(!scoreData.reqId){
+        scoreData.reqId = (Date.now().toString(36) + Math.random().toString(36).slice(2,8));
+      }
+      const params = new URLSearchParams(scoreData);
+      const url = GAS_URL + '?' + params.toString();
+
+      // オフライン時は手動保存へ誘導
+      if (typeof navigator !== 'undefined' && navigator && navigator.onLine === false){
+        resolve(false);
+        return;
+      }
+
+      // 可能なら fetch(no-cors) + keepalive で送信（レスポンスは読めないが、送信開始で成功扱い）
+      if (typeof fetch === 'function'){
+        try{
+          fetch(url, { mode: 'no-cors', keepalive: true })
+            .then(()=> resolve(true))
+            .catch(()=> {
+              // フォールバック：画像ビーコン（読み込み成否に関わらず成功扱い）
+              try{
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(true);
+                img.src = url + '&_img=1&_ts=' + Date.now();
+                // 念のための保険
+                setTimeout(()=> resolve(true), 2500);
+              }catch(_){
+                resolve(true);
+              }
+            });
+          return;
+        }catch(_){ /* フォールスルー */ }
+      }
+
+      // 最終フォールバック：画像ビーコンのみ
+      try{
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(true);
+        img.src = url + '&_img=1&_ts=' + Date.now();
+        setTimeout(()=> resolve(true), 2500);
+      }catch(_){
+        resolve(false);
+      }
+    }catch(e){
+      resolve(false);
+    }
+  });
+}
+;
+
+    async function getScoresFromCloud(){
+      if(GAS_URL.includes('YOUR_SCRIPT_ID')){ alert('Google Apps ScriptのURLを設定してください'); return []; }
+      try{
+        const res=await fetch(GAS_URL+'?action=getAll');
+        const data=await res.json();
+        if(data.success){ return data.scores; }
+        console.error('データ取得エラー:', data.error); return [];
+      }catch(e){ console.error('通信エラー:', e); return []; }
+    }
+    async function loadCloudScores(){
+      const scores=await getScoresFromCloud();
+      if(scores.length>0){
+        scores.forEach(cs=>{
+          const exists=studentScores.some(ls=>ls.date===cs.date && ls.name===cs.name);
+          if(!exists){
+            const percentage=normalizePercentage(cs.percentage);
+            studentScores.push({
+              date:cs.date, name:cs.name, grade:cs.grade, class:cs.class, number:cs.number,
+              percentage, score:cs.score, total:cs.total, range:(cs.range||'').replace('No.','')
+            });
+          }
+        });
+        saveData(); alert(`クラウドから${scores.length}件の成績を読み込みました`); showTeacherPage();
+      }else{ alert('クラウドに成績データがありません'); }
+    }
+
+    function saveToCloudWithFeedback(){
+      if(!currentStudentInfo){ alert('生徒情報がありません'); return; }
+      const payload={
+        action:'save',
+        date:new Date().toLocaleString('ja-JP'),
+        name:currentStudentInfo.name,
+        grade:currentStudentInfo.grade,
+        class:currentStudentInfo.class,
+        number:currentStudentInfo.number,
+        percentage: Math.round((score/questions.length)*100),
+        score:score,
+        total:questions.length,
+        range:`${selectedRange.start}-${selectedRange.end}`
+      };
+      saveScoreToCloud(payload);
+      document.getElementById('saveNotice').style.display='none';
+      document.getElementById('saveSuccess').style.display='block';
+      document.getElementById('cloudSaveBtn').style.display='none';
+    }
+
+    // ====== 復習モード ======
+    function startReviewMode(){
+      if(!currentStudentInfo) return;
+      resetQuizState();
+      isReviewMode=true; currentMode='quiz';
+      startQuizGame();
+    }
+
+    // ====== 単語データの読み込み ======
+    async function loadVocabularyData(){
+      try{
+        const res=await fetch('target1900完全版.csv', {cache:'no-store'});
+        if(res.ok){
+          const csv=await res.text();
+          const lines=csv.trim().split('\n');
+          vocabularyData=lines.slice(1).map(line=>{
+            const [id, english, japanese] = line.split(',');
+            return { id:parseInt(id), english:(english||'').trim(), japanese:(japanese||'').trim() };
+          }).filter(v=>!isNaN(v.id) && v.english && v.japanese);
+          console.log('CSVから単語データを読み込み:', vocabularyData.length, '件');
+          return;
+        }
+      }catch(e){ console.warn('CSV読み込みエラー:', e); }
+      // フォールバック（最小データ）
+      vocabularyData=[
+        {id:1,english:'believe',japanese:'を信じる'},
+        {id:2,english:'consider',japanese:'を見なす'},
+        {id:3,english:'expect',japanese:'を予期する'},
+        {id:4,english:'decide',japanese:'決める'},
+        {id:5,english:'allow',japanese:'を許す'},
+        {id:6,english:'remember',japanese:'思い出す'},
+        {id:7,english:'worry',japanese:'心配する'},
+        {id:8,english:'concern',japanese:'に関係する'},
+        {id:9,english:'suggest',japanese:'を提案する'},
+        {id:10,english:'explain',japanese:'説明する'}
+      ];
+      console.warn('CSVが見つからないため、フォールバックの最小データを使用します。');
+    }
+
+    // ====== 初期化 ======
+    window.addEventListener('DOMContentLoaded', async ()=>{
+      initializeSelects();
+      loadData();
+      toggleCustomCount();
+      await loadVocabularyData();
+    });
+  
+let hasSentToCloud = false;   // 二重送信防止用
+
+// showResult の末尾に追加するコード例
+function autoSendResult(newScore) {
+  if (!hasSentToCloud) {
+    hasSentToCloud = true;
+    const payload = {
+      action: 'save',
+      date: newScore.date,
+      name: newScore.name,
+      grade: newScore.grade,
+      class: newScore.class,
+      number: newScore.number,
+      percentage: newScore.percentage,
+      score: newScore.score,
+      total: newScore.total,
+      range: newScore.range
+    };
+    saveScoreToCloud(payload).then((ok)=>{
+      const notice = document.getElementById('saveNotice');
+      const success = document.getElementById('saveSuccess');
+      const btn = document.getElementById('cloudSaveBtn');
+      if (ok) {
+        if (success) success.style.display = 'block';
+      } else {
+        if (notice) notice.style.display = 'block';
+        if (btn) btn.style.display = 'block';
+      }
+    });
+  }
+}
+
+</script>
+</body>
+</html>
